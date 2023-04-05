@@ -13,10 +13,13 @@ const server = http.createServer((req, res) => {
     let partsUrl = req.url.split('/');
     
     if(req.url === '/'){
+        res.writeHead(200, {'Content-Type': 'text/html'});
         res.end('home page');
     } else if(req.url === '/category'){
+        res.writeHead(200, {'Content-Type': 'text/html'});
         res.end('Category page');
     } else if(req.url === '/category/product'){
+        res.writeHead(200, {'Content-Type': 'text/html'});
         res.end('Product page');
     } else if(req.url === `/${partsUrl[1]}/${partsUrl[2]}`){
         let ext = path.extname(`/${partsUrl[1]}/${partsUrl[2]}`);
@@ -24,9 +27,10 @@ const server = http.createServer((req, res) => {
 
         const render = () => {
             fs.access(`./${dir}${partsUrl[2]}`, fs.constants.F_OK, (err) => {
-                if (err)
-                    console.log('No file')
-                else {
+                if (err){
+                    res.writeHead(404);
+                    res.end('404 page');
+                }else {
                     let data = fs.readFileSync(`./${dir}${partsUrl[2]}`);
                     res.end(data);
                 }
@@ -49,11 +53,13 @@ const server = http.createServer((req, res) => {
                     }
                 }
                 if(!findArticle){
+                    res.writeHead(404);
                     res.end('404 page');
                 }
                 res.end();
             }
         } else{
+            res.writeHead(404);
             res.end('404 page');
         }
     }  else if(req.url === `/${partsUrl[1]}`){
@@ -61,18 +67,22 @@ const server = http.createServer((req, res) => {
         
         if(ext === '.html'){
             fs.access(`./${partsUrl[1]}`, fs.constants.F_OK, (err) => {
-                if (err)
+                if (err){
+                    res.writeHead(404);
                     res.end('404 page');
-                else {
+                } else {
                     let data = fs.readFileSync(`./${partsUrl[1]}`);
+                    res.writeHead(200, {'Content-Type': 'text/html'});
                     res.end(data);
                 }
             });
         }else{
+            res.writeHead(404);
             res.end('404 page');
         }
         
     } else{
+        res.writeHead(404);
         res.end('404 page');
     }
     
